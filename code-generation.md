@@ -51,3 +51,55 @@ hello,world
 ```
 
 需要说明的是这里janino只是帮我们把代码编译成了class对象，通过getClazz这个方法可以得到它。这里也可以不用接口，直接通过反射来调hello方法也可以。
+
+## Spark SQL 中的CodeGeneration代码编译和运行
+这里使用spark2.3.2版本的spark进行分析。
+
+object CodeGenerator里面有一个cache成员，它的key是代码，值对应的是编译的类。这样做的好处不言而喻：对于同一份代码，CodeGenerator只需要编译一次：
+```
+// CodeGenerator.scala
+private val cache = CacheBuilder.newBuilder()
+  .maximumSize(100)
+  .build(
+    new CacheLoader[CodeAndComment, (GeneratedClass, Int)]() {
+      override def load(code: CodeAndComment): (GeneratedClass, Int) = {
+        val startTime = System.nanoTime()
+        val result = doCompile(code)
+        val endTime = System.nanoTime()
+        def timeMs: Double = (endTime - startTime).toDouble / 1000000
+        CodegenMetrics.METRIC_SOURCE_CODE_SIZE.update(code.body.length)
+        CodegenMetrics.METRIC_COMPILATION_TIME.update(timeMs.toLong)
+        logInfo(s"Code generated in $timeMs ms")
+        result
+      }
+    })
+```
+
+编译的方法在doCompile里面实现，去掉了一些繁琐的细节：
+```
+private[this] def doCompile(code: CodeAndComment): (GeneratedClass, Int) = {
+  val evaluator = new ClassBodyEvaluator()
+
+  // ... set classLoader
+  // set class name
+  evaluator.setClassName("org.apache.spark.sql.catalyst.expressions.GeneratedClass")
+  // import some classes...
+  // set extended class 类似于上面的例子IHello
+  evaluator.setExtendedClass(classOf[GeneratedClass])
+
+  // get maxCodeSize
+  val maxCodeSize = ....
+  // 实例化对象
+  (evaluator.getClazz().newInstance().asInstanceOf[GeneratedClass], maxCodeSize)
+}
+```
+可以看到，和前面的例子思路大致类似，它扩展了接口GeneratedClass，也就是说，后面的代码生成需要实现这个方法
+```
+/**
+ * A wrapper for generated class, defines a `generate` method so that we can pass extra objects
+ * into generated class.
+ */
+abstract class GeneratedClass {
+  def generate(references: Array[Any]): Any
+}
+```
