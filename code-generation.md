@@ -6,15 +6,23 @@ Spark SQL 支持代码生成技术，它最主要的目的是加速SQL的执行�
 
 ## CodeGeneration代码编译执行
 Spark SQL使用janino来编译生成的代码。janino是一个小型的编译器，可以编译表达式，类，下面用一个小例子来说明它的使用：
+1. 引入pom依赖
+```
+<dependency>
+    <groupId>org.codehaus.janino</groupId>
+    <artifactId>janino</artifactId>
+    <version>3.0.15</version>
+</dependency>
+```
 
-1. 定义接口IHello，它有一个hello的抽象方法:
+2. 定义接口IHello，它有一个hello的抽象方法:
 ```
 public abstract class IHello {
     public abstract void hello();
 }
 ```
 
-2. 新建一个待编译的代码文件，它的内容现在是写死的，而CodeGeneration生成的代码是确定的，这里只是用来演示janino的使用流程：
+3. 新建一个待编译的代码文件，它的内容现在是写死的，而CodeGeneration生成的代码是确定的，这里只是用来演示janino的使用流程：
 ```
 // code.java
 public void hello() {
@@ -23,7 +31,7 @@ public void hello() {
 ```
 > 注意，在这里不要定义public class... 生成的类名、import的包名都可以在后面的代码指定，这里只需要写类里面的代码就可以了
 
-3. 主函数：
+4. 主函数：
 ```
 public class Test  {
     public static void main(String[] args) throws CompileException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, InstantiationException, IOException {
