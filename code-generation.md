@@ -115,19 +115,9 @@ import org.apache.spark.sql.types._;
 
 val schema = new StructType(Array(
   StructField("a", StringType, true),
-  StructField("b", IntegerType, true),
-  StructField("c", new StructType(Array(
-    StructField("aa", StringType, true),
-    StructField("bb", IntegerType, true)
-  )), true),
-  StructField("d", new StructType(Array(
-    StructField("a", new StructType(Array(
-      StructField("b", StringType, true),
-      StructField("", IntegerType, true)
-    )), true)
-  )), true)
-))
-val row = Row("a", 1, Row("b", 2), Row(Row("c", 3)))
+  StructField("b", IntegerType, true)))
+
+val row = Row("a", 1)
 val lit = Literal.create(row, schema)
 val internalRow = lit.value.asInstanceOf[InternalRow]
 
@@ -144,170 +134,57 @@ val unsafeProj = UnsafeProjection.create(schema)
 /* 006 */
 /* 007 */   private Object[] references;
 /* 008 */   private org.apache.spark.sql.catalyst.expressions.codegen.BufferHolder[] mutableStateArray_1 = new org.apache.spark.sql.catalyst.expressions.codegen.BufferHolder[1];
-/* 009 */   private org.apache.spark.sql.catalyst.expressions.codegen.UnsafeRowWriter[] mutableStateArray_2 = new org.apache.spark.sql.catalyst.expressions.codegen.UnsafeRowWriter[4];
+/* 009 */   private org.apache.spark.sql.catalyst.expressions.codegen.UnsafeRowWriter[] mutableStateArray_2 = new org.apache.spark.sql.catalyst.expressions.codegen.UnsafeRowWriter[1];
 /* 010 */   private UnsafeRow[] mutableStateArray_0 = new UnsafeRow[1];
 /* 011 */
 /* 012 */   public SpecificUnsafeProjection(Object[] references) {
 /* 013 */     this.references = references;
-/* 014 */     mutableStateArray_0[0] = new UnsafeRow(4);
-/* 015 */     mutableStateArray_1[0] = new org.apache.spark.sql.catalyst.expressions.codegen.BufferHolder(mutableStateArray_0[0], 96);
-/* 016 */     mutableStateArray_2[0] = new org.apache.spark.sql.catalyst.expressions.codegen.UnsafeRowWriter(mutableStateArray_1[0], 4);
-/* 017 */     mutableStateArray_2[1] = new org.apache.spark.sql.catalyst.expressions.codegen.UnsafeRowWriter(mutableStateArray_1[0], 2);
-/* 018 */     mutableStateArray_2[2] = new org.apache.spark.sql.catalyst.expressions.codegen.UnsafeRowWriter(mutableStateArray_1[0], 1);
-/* 019 */     mutableStateArray_2[3] = new org.apache.spark.sql.catalyst.expressions.codegen.UnsafeRowWriter(mutableStateArray_1[0], 2);
-/* 020 */
-/* 021 */   }
-/* 022 */
-/* 023 */   public void initialize(int partitionIndex) {
-/* 024 */
-/* 025 */   }
-/* 026 */
-/* 027 */   // Scala.Function1 need this
-/* 028 */   public java.lang.Object apply(java.lang.Object row) {
-/* 029 */     return apply((InternalRow) row);
-/* 030 */   }
+/* 014 */     mutableStateArray_0[0] = new UnsafeRow(2);
+/* 015 */     mutableStateArray_1[0] = new org.apache.spark.sql.catalyst.expressions.codegen.BufferHolder(mutableStateArray_0[0], 32);
+/* 016 */     mutableStateArray_2[0] = new org.apache.spark.sql.catalyst.expressions.codegen.UnsafeRowWriter(mutableStateArray_1[0], 2);
+/* 017 */
+/* 018 */   }
+/* 019 */
+/* 020 */   public void initialize(int partitionIndex) {
+/* 021 */
+/* 022 */   }
+/* 023 */
+/* 024 */   // Scala.Function1 need this
+/* 025 */   public java.lang.Object apply(java.lang.Object row) {
+/* 026 */     return apply((InternalRow) row);
+/* 027 */   }
+/* 028 */
+/* 029 */   public UnsafeRow apply(InternalRow i) {
+/* 030 */     mutableStateArray_1[0].reset();
 /* 031 */
-/* 032 */   public UnsafeRow apply(InternalRow i) {
-/* 033 */     mutableStateArray_1[0].reset();
+/* 032 */     mutableStateArray_2[0].zeroOutNullBytes();
+/* 033 */
 /* 034 */
-/* 035 */     mutableStateArray_2[0].zeroOutNullBytes();
-/* 036 */     writeFields_0_0(i);
-/* 037 */     writeFields_0_1(i);
-/* 038 */     mutableStateArray_0[0].setTotalSize(mutableStateArray_1[0].totalSize());
-/* 039 */     return mutableStateArray_0[0];
-/* 040 */   }
-/* 041 */
+/* 035 */     boolean isNull_0 = i.isNullAt(0);
+/* 036 */     UTF8String value_0 = isNull_0 ? null : (i.getUTF8String(0));
+/* 037 */     if (isNull_0) {
+/* 038 */       mutableStateArray_2[0].setNullAt(0);
+/* 039 */     } else {
+/* 040 */       mutableStateArray_2[0].write(0, value_0);
+/* 041 */     }
 /* 042 */
-/* 043 */   private void writeFields_0_1(InternalRow i) {
-/* 044 */
-/* 045 */
-/* 046 */     boolean isNull_3 = i.isNullAt(3);
-/* 047 */     InternalRow value_3 = isNull_3 ? null : (i.getStruct(3, 1));
-/* 048 */     if (isNull_3) {
-/* 049 */       mutableStateArray_2[0].setNullAt(3);
-/* 050 */     } else {
-/* 051 */       // Remember the current cursor so that we can calculate how many bytes are
-/* 052 */       // written later.
-/* 053 */       final int tmpCursor_5 = mutableStateArray_1[0].cursor;
+/* 043 */
+/* 044 */     boolean isNull_1 = i.isNullAt(1);
+/* 045 */     int value_1 = isNull_1 ? -1 : (i.getInt(1));
+/* 046 */     if (isNull_1) {
+/* 047 */       mutableStateArray_2[0].setNullAt(1);
+/* 048 */     } else {
+/* 049 */       mutableStateArray_2[0].write(1, value_1);
+/* 050 */     }
+/* 051 */     mutableStateArray_0[0].setTotalSize(mutableStateArray_1[0].totalSize());
+/* 052 */     return mutableStateArray_0[0];
+/* 053 */   }
 /* 054 */
-/* 055 */       final InternalRow tmpInput_1 = value_3;
-/* 056 */       if (tmpInput_1 instanceof UnsafeRow) {
-/* 057 */
-/* 058 */         final int sizeInBytes_1 = ((UnsafeRow) tmpInput_1).getSizeInBytes();
-/* 059 */         // grow the global buffer before writing data.
-/* 060 */         mutableStateArray_1[0].grow(sizeInBytes_1);
-/* 061 */         ((UnsafeRow) tmpInput_1).writeToMemory(mutableStateArray_1[0].buffer, mutableStateArray_1[0].cursor);
-/* 062 */         mutableStateArray_1[0].cursor += sizeInBytes_1;
-/* 063 */
-/* 064 */       } else {
-/* 065 */         mutableStateArray_2[2].reset();
-/* 066 */
-/* 067 */
-/* 068 */         if (tmpInput_1.isNullAt(0)) {
-/* 069 */           mutableStateArray_2[2].setNullAt(0);
-/* 070 */         } else {
-/* 071 */           // Remember the current cursor so that we can calculate how many bytes are
-/* 072 */           // written later.
-/* 073 */           final int tmpCursor_6 = mutableStateArray_1[0].cursor;
-/* 074 */
-/* 075 */           final InternalRow tmpInput_2 = tmpInput_1.getStruct(0, 2);
-/* 076 */           if (tmpInput_2 instanceof UnsafeRow) {
-/* 077 */
-/* 078 */             final int sizeInBytes_2 = ((UnsafeRow) tmpInput_2).getSizeInBytes();
-/* 079 */             // grow the global buffer before writing data.
-/* 080 */             mutableStateArray_1[0].grow(sizeInBytes_2);
-/* 081 */             ((UnsafeRow) tmpInput_2).writeToMemory(mutableStateArray_1[0].buffer, mutableStateArray_1[0].cursor);
-/* 082 */             mutableStateArray_1[0].cursor += sizeInBytes_2;
-/* 083 */
-/* 084 */           } else {
-/* 085 */             mutableStateArray_2[3].reset();
-/* 086 */
-/* 087 */
-/* 088 */             if (tmpInput_2.isNullAt(0)) {
-/* 089 */               mutableStateArray_2[3].setNullAt(0);
-/* 090 */             } else {
-/* 091 */               mutableStateArray_2[3].write(0, tmpInput_2.getUTF8String(0));
-/* 092 */             }
-/* 093 */
-/* 094 */
-/* 095 */             if (tmpInput_2.isNullAt(1)) {
-/* 096 */               mutableStateArray_2[3].setNullAt(1);
-/* 097 */             } else {
-/* 098 */               mutableStateArray_2[3].write(1, tmpInput_2.getInt(1));
-/* 099 */             }
-/* 100 */           }
-/* 101 */
-/* 102 */           mutableStateArray_2[2].setOffsetAndSize(0, tmpCursor_6, mutableStateArray_1[0].cursor - tmpCursor_6);
-/* 103 */         }
-/* 104 */       }
-/* 105 */
-/* 106 */       mutableStateArray_2[0].setOffsetAndSize(3, tmpCursor_5, mutableStateArray_1[0].cursor - tmpCursor_5);
-/* 107 */     }
-/* 108 */
-/* 109 */   }
-/* 110 */
-/* 111 */
-/* 112 */   private void writeFields_0_0(InternalRow i) {
-/* 113 */
-/* 114 */
-/* 115 */     boolean isNull_0 = i.isNullAt(0);
-/* 116 */     UTF8String value_0 = isNull_0 ? null : (i.getUTF8String(0));
-/* 117 */     if (isNull_0) {
-/* 118 */       mutableStateArray_2[0].setNullAt(0);
-/* 119 */     } else {
-/* 120 */       mutableStateArray_2[0].write(0, value_0);
-/* 121 */     }
-/* 122 */
-/* 123 */
-/* 124 */     boolean isNull_1 = i.isNullAt(1);
-/* 125 */     int value_1 = isNull_1 ? -1 : (i.getInt(1));
-/* 126 */     if (isNull_1) {
-/* 127 */       mutableStateArray_2[0].setNullAt(1);
-/* 128 */     } else {
-/* 129 */       mutableStateArray_2[0].write(1, value_1);
-/* 130 */     }
-/* 131 */
-/* 132 */
-/* 133 */     boolean isNull_2 = i.isNullAt(2);
-/* 134 */     InternalRow value_2 = isNull_2 ? null : (i.getStruct(2, 2));
-/* 135 */     if (isNull_2) {
-/* 136 */       mutableStateArray_2[0].setNullAt(2);
-/* 137 */     } else {
-/* 138 */       // Remember the current cursor so that we can calculate how many bytes are
-/* 139 */       // written later.
-/* 140 */       final int tmpCursor_2 = mutableStateArray_1[0].cursor;
-/* 141 */
-/* 142 */       final InternalRow tmpInput_0 = value_2;
-/* 143 */       if (tmpInput_0 instanceof UnsafeRow) {
-/* 144 */
-/* 145 */         final int sizeInBytes_0 = ((UnsafeRow) tmpInput_0).getSizeInBytes();
-/* 146 */         // grow the global buffer before writing data.
-/* 147 */         mutableStateArray_1[0].grow(sizeInBytes_0);
-/* 148 */         ((UnsafeRow) tmpInput_0).writeToMemory(mutableStateArray_1[0].buffer, mutableStateArray_1[0].cursor);
-/* 149 */         mutableStateArray_1[0].cursor += sizeInBytes_0;
-/* 150 */
-/* 151 */       } else {
-/* 152 */         mutableStateArray_2[1].reset();
-/* 153 */
-/* 154 */
-/* 155 */         if (tmpInput_0.isNullAt(0)) {
-/* 156 */           mutableStateArray_2[1].setNullAt(0);
-/* 157 */         } else {
-/* 158 */           mutableStateArray_2[1].write(0, tmpInput_0.getUTF8String(0));
-/* 159 */         }
-/* 160 */
-/* 161 */
-/* 162 */         if (tmpInput_0.isNullAt(1)) {
-/* 163 */           mutableStateArray_2[1].setNullAt(1);
-/* 164 */         } else {
-/* 165 */           mutableStateArray_2[1].write(1, tmpInput_0.getInt(1));
-/* 166 */         }
-/* 167 */       }
-/* 168 */
-/* 169 */       mutableStateArray_2[0].setOffsetAndSize(2, tmpCursor_2, mutableStateArray_1[0].cursor - tmpCursor_2);
-/* 170 */     }
-/* 171 */
-/* 172 */   }
-/* 173 */
-/* 174 */ }
+/* 055 */
+/* 056 */ }
+```
+
+## 全阶段生成
+```
+
 ```
